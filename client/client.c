@@ -56,12 +56,17 @@ int sign_in_menu(){
     return select;
 }
 
-void enter_id_and_pw(const char* type, char* line){
+int enter_id_and_pw(const char* type, char* line){
     char id[USER_INFO_LEN], pw[USER_INFO_LEN];
-                memset(id, 0, USER_INFO_LEN); memset(pw, 0, USER_INFO_LEN); memset(line, 0, BUFSIZ);
-                printf("ID: "); fgets(id, USER_INFO_LEN, stdin); id[strcspn(id, "\n")] = '\0';
-                printf("PW: "); fgets(pw, USER_INFO_LEN, stdin); pw[strcspn(pw, "\n")] = '\0';
-                snprintf(line, BUFSIZ, "%s %s %s", type, id, pw);
+    memset(id, 0, USER_INFO_LEN); memset(pw, 0, USER_INFO_LEN); memset(line, 0, BUFSIZ);
+    printf("ID: "); fgets(id, USER_INFO_LEN, stdin); id[strcspn(id, "\n")] = '\0';
+    // 뒤로가기
+    if(strcmp(id, "quit") == 0){
+        return CLIENT_QUIT;
+    }
+    printf("PW: "); fgets(pw, USER_INFO_LEN, stdin); pw[strcspn(pw, "\n")] = '\0';
+    snprintf(line, BUFSIZ, "%s %s %s", type, id, pw);
+    return CLIENT_CONTINUE;
 }
 
 // 서버와의 연결 시도
@@ -162,7 +167,7 @@ int run_client(int server_sock, const char* line){
                 } else if(strchr(pipe_buf, '1') != NULL){
                     if(strchr(pipe_buf, '-') != NULL){
                         printf("File not exists.\n");
-                        return CLIENT_LOGOUT;   // users.txt 파일이 없으면 메뉴 화면으로
+                        return CLIENT_QUIT;   // users.txt 파일이 없으면 메뉴 화면으로
                     }
                     printf("==========VedaChat==========\n");
                 }
@@ -190,10 +195,10 @@ int run_client(int server_sock, const char* line){
             fgets(buf, BUFSIZ, stdin);
             buf[strcspn(buf, "\n")] = '\0';
             // 종료
-            if(strcmp(buf, "logout") == 0){
+            if(strcmp(buf, "sign out") == 0){
                 kill(pid, SIGTERM);
                 close(server_sock);
-                return CLIENT_LOGOUT; // 로그아웃 시 메뉴 화면으로   
+                return CLIENT_QUIT; // 로그아웃 시 메뉴 화면으로   
             }
             send(server_sock, buf, strlen(buf), 0);
         }

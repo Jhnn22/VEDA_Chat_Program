@@ -41,9 +41,16 @@ int main(int argc, char** argv){
         int client_status = CLIENT_ERROR;
         while(client_status == CLIENT_ERROR){
             char line[BUFSIZ];
-            enter_id_and_pw(type, line);                    // ID, PW 입력
-            int server_sock = connect_to_server(argv);      // 서버 연결
-            client_status = run_client(server_sock, line);  // 클라이언트 실행
-        } while (client_status == CLIENT_ERROR);
+            client_status = enter_id_and_pw(type, line);        // ID, PW 입력
+            if(client_status == CLIENT_QUIT){
+                break;
+            }    
+            if(client_status == CLIENT_CONTINUE){
+                int server_sock = connect_to_server(argv);      // 서버 연결
+                client_status = run_client(server_sock, line);  // 클라이언트 실행
+            }
+        }
     }
+
+    return 0;
 }

@@ -7,7 +7,8 @@
 #define USER_INFO_LEN 30
 // 클라이언트 상태 정의
 #define CLIENT_ERROR -1
-#define CLIENT_LOGOUT 0
+#define CLIENT_CONTINUE 0
+#define CLIENT_QUIT 1
 
 // 시그널
 void handle_sigchld(int sig);
@@ -17,7 +18,7 @@ void set_sigaction_sigusr1();
 
 // 로그인
 int sign_in_menu();
-void enter_id_and_pw(const char* type, char* line);
+int enter_id_and_pw(const char* type, char* line);
 
 // 클라이언트
 int connect_to_server(char** argv);
