@@ -52,7 +52,7 @@ int sign_in_menu(){
     printf("3. Quit\n");
     printf("============================\n");
     printf(">> "); 
-    scanf("%d", &select); getchar();
+    scanf("%d", &select); while(getchar() != '\n');
     return select;
 }
 
