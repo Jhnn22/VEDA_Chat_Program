@@ -46,11 +46,11 @@ void set_sigaction_sigusr1(){
 // 로그인 메뉴
 int sign_in_menu(){
     int select;
-    printf("=======Menu=======\n");
+    printf("============Menu============\n");
     printf("1. Sign In\n");
     printf("2. Sign Up\n");
     printf("3. Quit\n");
-    printf("==================\n");
+    printf("============================\n");
     printf(">> "); 
     scanf("%d", &select); getchar();
     return select;
@@ -164,7 +164,7 @@ int run_client(int server_sock, const char* line){
                         printf("File not exists.\n");
                         return CLIENT_LOGOUT;   // users.txt 파일이 없으면 메뉴 화면으로
                     }
-                    printf("----------VedaChat----------\n");
+                    printf("==========VedaChat==========\n");
                 }
             } else if(strncmp(pipe_buf, "SIGN_UP_RESULT", 14) == 0){
                 if(strchr(pipe_buf, '0') != NULL){
@@ -174,7 +174,7 @@ int run_client(int server_sock, const char* line){
                     return CLIENT_ERROR;  // 회원가입 실패 시 다시 입력으로
                 }
                 else{
-                    printf("----------VedaChat----------\n");
+                    printf("==========VedaChat==========\n");
                 }
             } else{
                 printf("Invalid input: ID or PW is empty.\n");

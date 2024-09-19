@@ -54,7 +54,6 @@ int sign_in(const char* id, const char* pw){
         sscanf(line, "%s %s", stored_id, stored_pw);
         if(strcmp(id, stored_id) == 0 && strcmp(pw, stored_pw) == 0){
             strcpy(clients[client_count - 1].user_id, id);  // 아이디 저장
-            printf("Connected clients: [%s] [%s] [%s] [%s]\n", clients[0].user_id, clients[1].user_id, clients[2].user_id, clients[3].user_id);    // 디버그용
             fclose(file);
             return 1;   // 아이디 & 비밀번호 중복, 로그인 성공
         }
@@ -83,7 +82,6 @@ int sign_up(const char* id, const char* pw){
     fprintf(file, "%s %s\n", id, pw);
     fclose(file);
     strcpy(clients[client_count - 1].user_id, id);  // 아이디 저장
-    printf("Connected clients: [%s] [%s] [%s] [%s]\n", clients[0].user_id, clients[1].user_id, clients[2].user_id, clients[3].user_id);    // 디버그용
     return 1;   // 회원가입 성공
 }
 
@@ -153,7 +151,6 @@ void two_way_communication(int client_sock){
             exit(0);
         } else{
             write(clients[client_count].from_child_pipe[1], buf, len_1);
-            printf("Parent[%d] <- Child[%d] <- Client[%d]: %.*s\n", client_count, client_count, client_count, (int)len_1, buf);
         }
 
         // 부모 -> 자식 -> 클라
@@ -172,7 +169,6 @@ void two_way_communication(int client_sock){
             exit(0);
         } else {
             write(client_sock, buf, len_2);
-            printf("Parent[%d] -> Child[%d] -> Client[%d]: %.*s\n", client_count, client_count, client_count, (int)len_2, buf);
         }
     }
     close(client_sock);
@@ -208,13 +204,7 @@ void broadcast_message(){
             }
             client_count--;
             i--;    // 제외 위치 기준으로 한칸씩 당겼으니 현재 위치도 한칸 앞으로
-            // 디버그
-            printf("Total clients: %d\n", client_count);
-            printf("Connected  ID: ");
-            for (int j = 0; j < client_count; j++) {
-                printf("[%s] ", clients[j].user_id);
-            }
-            printf("\n");
+            printf("Total clients: %d\n", client_count);    // 접속 해제 후 클라이언트 수
         } else{
             // 원본 수정을 방지하기 위한 복사본 생성
             char tmp[BUFSIZ];
@@ -297,7 +287,7 @@ void run_server(){
                 client_count++;
                 close(clients[client_count].to_child_pipe[1]);
                 close(clients[client_count].from_child_pipe[0]);
-                printf("Connected clients: %d\n", client_count);    // 디버그
+                printf("Total clients: %d\n", client_count);    // 접속 후 클라이언트 수 
             }   
         }
         broadcast_message();    // 입력받은 메세지에 대한 브로드 캐스트
