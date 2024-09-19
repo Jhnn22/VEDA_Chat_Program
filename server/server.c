@@ -146,7 +146,6 @@ void two_way_communication(int client_sock){
                 exit(1);
             }
         } else if(len_1 == 0){
-            printf("Client disconnected.\n");
             close(client_sock);
             exit(0);
         } else{
