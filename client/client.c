@@ -43,16 +43,14 @@ void set_sigaction_sigusr1(){
     }    
 }
 
-// -------------------
-
 // 로그인 메뉴
 int sign_in_menu(){
     int select;
-    printf("===========\n");
+    printf("=======Menu=======\n");
     printf("1. Sign In\n");
     printf("2. Sign Up\n");
     printf("3. Quit\n");
-    printf("===========\n");
+    printf("==================\n");
     printf(">> "); 
     scanf("%d", &select); getchar();
     return select;
@@ -65,8 +63,6 @@ void enter_id_and_pw(const char* type, char* line){
                 printf("PW: "); fgets(pw, USER_INFO_LEN, stdin); pw[strcspn(pw, "\n")] = '\0';
                 snprintf(line, BUFSIZ, "%s %s %s", type, id, pw);
 }
-
-// -------------------
 
 // 서버와의 연결 시도
 int connect_to_server(char** argv){
@@ -110,9 +106,7 @@ void print_message(int server_sock, int pipe_fd[2]){
             break;
         }
         // 로그인, 회원가입 요청에 대한 응답인 경우, 따로 처리
-        if(strncmp(buf, "SIGN_IN_RESULT", 14) == 0 || strncmp(buf, "SIGN_UP_RESULT", 14) == 0){
-            write(pipe_fd[1], buf, len);
-        } else if(strncmp(buf, "INVALID", 7) == 0){
+        if(strncmp(buf, "SIGN_IN_RESULT", 14) == 0 || strncmp(buf, "SIGN_UP_RESULT", 14) == 0 || strncmp(buf, "INVALID", 7) == 0){
             write(pipe_fd[1], buf, len);
         } else{
             printf("%s\n", buf);
