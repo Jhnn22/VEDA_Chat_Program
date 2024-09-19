@@ -141,7 +141,7 @@ void two_way_communication(int client_sock){
         ssize_t len_1 = read(client_sock, buf, BUFSIZ);
         if(len_1 < 0){
             if(errno == EAGAIN || errno == EWOULDBLOCK){
-                
+                // 당장은 데이터가 없음, 다른 클라이언트를 확인해보자
             } else{
                 perror("read from client");
                 close(client_sock);
@@ -160,7 +160,7 @@ void two_way_communication(int client_sock){
         ssize_t len_2 = read(clients[client_count].to_child_pipe[0], buf, BUFSIZ);
         if(len_2 < 0){
             if(errno == EAGAIN || errno == EWOULDBLOCK) {
-                
+                // 당장은 데이터가 없음, 다른 클라이언트를 확인해보자
             } else{
                 perror("read from parent");
                 close(client_sock);
@@ -207,10 +207,10 @@ void broadcast_message(){
                 clients[k] = clients[k+1];
             }
             client_count--;
-            i--;    // 제외 위치 기준으로 한칸씩 당겼으니 현재 위치도 한칸 앞으로!
-            // 디버그용
-            printf("Connected clients: %d\n", client_count);
-            printf("Connected clients: ");
+            i--;    // 제외 위치 기준으로 한칸씩 당겼으니 현재 위치도 한칸 앞으로
+            // 디버그
+            printf("Total clients: %d\n", client_count);
+            printf("Connected  ID: ");
             for (int j = 0; j < client_count; j++) {
                 printf("[%s] ", clients[j].user_id);
             }
@@ -226,7 +226,7 @@ void broadcast_message(){
                 if(id && pw ){
                     int result;
                     char message[BUFSIZ];   
-                    if(strcmp(token, "SIGN_IN") == 0){  
+                    if(strcmp(token, "SIGN_IN") == 0){
                         result = sign_in(id, pw);
                         snprintf(message, BUFSIZ, "SIGN_IN_RESULT %d", result);
                     } else{
@@ -240,12 +240,10 @@ void broadcast_message(){
                 }
             } else{
                 snprintf(new_buf, USER_INFO_LEN + BUFSIZ + 3, "[%s] %s", clients[i].user_id, buf);
-                // printf("%s\n", new_buf);    // 디버그용
                 for(int j = 0; j < client_count; j++){
                     // 입력한 자식 프로세스는 제외
                     if(j != i){
-                        // 부모 -> 자식들
-                        write(clients[j].to_child_pipe[1], new_buf, strlen(new_buf));
+                        write(clients[j].to_child_pipe[1], new_buf, strlen(new_buf));   // 부모 -> 자식들
                     }
                 }
             }
@@ -259,16 +257,15 @@ void run_server(){
         client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &client_addr_len);
         if(client_sock < 0){
             if(errno == EAGAIN || errno == EWOULDBLOCK){
-                // 데이터가 없음, 다음 작업으로 진행
+                // 당장은 데이터가 없음, 다른 클라이언트를 확인해보자
                 // continue를 사용하면 안되는 이유: 새로운 클라이언트의 연결 시도가 없으면 continue로 인해 broadcast_message 부분을 건너뜀
             } else{
                 perror("accept");
                 close(client_sock);
                 continue;
             }
-        } else {
-            // 클라이언트 소켓도 이제 결과를 즉시 반환 
-            set_nonblocking(client_sock);
+        } else { 
+            set_nonblocking(client_sock);   // 클라이언트 소켓도 이제 결과를 즉시 반환
             // 클라이언트 연결 최대치 제한
             if(client_count >= MAX_CLIENTS){
                 printf("Max clients reached.\n");
@@ -290,8 +287,7 @@ void run_server(){
                 close(server_sock);
                 close(clients[client_count].to_child_pipe[1]);
                 close(clients[client_count].from_child_pipe[0]);
-                // 양방향 통신
-                two_way_communication(client_sock);
+                two_way_communication(client_sock); // 양방향 통신
             } else if(pid > 0){  // 부모 프로세스
                 close(clients[client_count].to_child_pipe[0]);
                 close(clients[client_count].from_child_pipe[1]);
@@ -301,17 +297,10 @@ void run_server(){
                 client_count++;
                 close(clients[client_count].to_child_pipe[1]);
                 close(clients[client_count].from_child_pipe[0]);
-                // // 디버그용
-                printf("Connected clients: %d\n", client_count); 
-                // printf("Connected clients: ");
-                // for (int j = 0; j < client_count; j++) {
-                //     printf("[%s] ", clients[j].user_id);
-                // }
-            }
+                printf("Connected clients: %d\n", client_count);    // 디버그
+            }   
         }
-        // 입력받은 메세지에 대한 브로드 캐스트
-        broadcast_message();
-      
+        broadcast_message();    // 입력받은 메세지에 대한 브로드 캐스트
     }
     close(server_sock);
 }

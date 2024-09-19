@@ -18,6 +18,7 @@ typedef struct {
     char user_id[USER_INFO_LEN];
 } ClientInfo;
 
+// 중복 정의 방지, 전역 변수의 공유
 extern ClientInfo clients[MAX_CLIENTS];
 extern int client_count;
 extern int server_sock, client_sock;
