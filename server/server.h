@@ -34,6 +34,7 @@ int sign_in(const char* id, const char* pw);
 int sign_up(const char* id, const char* pw);
 
 // 서버
+void demon();
 void set_server();
 void set_nonblocking(int fd);
 void two_way_communication(int client_sock);
