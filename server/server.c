@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <arpa/inet.h>
-#include <sys/stat.h>
 #include "server.h"
 
 ClientInfo clients[MAX_CLIENTS];
@@ -84,34 +83,6 @@ int sign_up(const char* id, const char* pw){
     fclose(file);
     strcpy(clients[client_count - 1].user_id, id);  // 아이디 저장
     return 1;   // 회원가입 성공
-}
-
-// 서버 데몬으로 실행
-void demon(){
-    // 데몬 생성
-    pid_t pid = fork();
-    if(pid < 0){
-        perror("fork");
-        exit(1);
-    }
-    if(pid > 0){
-        exit(0);
-    }
-
-    // 새 세션 생성
-    if(setsid() < 0){
-        perror("setsid");
-        exit(1);
-    }
-
-    // 디렉토리 변경
-    if(chdir("/") < 0){
-        perror("chdir");
-        exit(1);
-    }
-
-    // 권한 변경
-    umask(0);
 }
 
 // 서버 생성
