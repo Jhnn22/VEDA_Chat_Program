@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
 #include "server.h"
 
 ClientInfo clients[MAX_CLIENTS];
