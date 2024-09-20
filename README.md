@@ -4,7 +4,7 @@
 ## 서버 실행
 ```c
 git clone https://github.com/Jhnn22/VEDA_Chat_Program.git
-cd VedaChat/server
+cd VEDA_Chat_Program/server
 mkdir build
 cd build
 cmake ..
@@ -15,7 +15,7 @@ make
 ## 클라이언트 실행
 ```c
 git clone https://github.com/Jhnn22/VEDA_Chat_Program.git
-cd VedaChat/client
+cd VEDA_Chat_Program/client
 mkdir build
 cd build
 cmake ..
